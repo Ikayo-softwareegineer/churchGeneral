@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Church Home Page</title>
+  
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  
+  <!-- Your custom CSS -->
+  <link rel="stylesheet" href="homepage.css" />
+</head>
+<body>
+  <div class="container py-4">
+
+    <!-- Programs Section -->
+    <h2 class="mb-3 text-primary">
+      <a href="programs.html" class="btn btn-primary">Programs</a>
+    </h2>
+    <div
+      id="programsCarousel"
+      class="carousel slide"
+      data-bs-ride="carousel"
+      data-bs-interval="3000"
+      data-bs-wrap="true"
+      data-bs-pause="false"
+    >
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="card bg-light text-center p-4">
+            <img src="images/prayer.jpg" class="d-block mx-auto mb-3 rounded" alt="Prayer Meeting" style="max-height:150px;"/>
+            <h3>Monday</h3>
+            <p>Prayer Meeting</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-light text-center p-4">
+            <img src="images/youth.jpg" class="d-block mx-auto mb-3 rounded" alt="Youth Fellowship" style="max-height:150px;"/>
+            <h3>Tuesday</h3>
+            <p>Youth Fellowship</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-light text-center p-4">
+            <img src="images/bible-study.jpg" class="d-block mx-auto mb-3 rounded" alt="Bible Study" style="max-height:150px;"/>
+            <h3>Wednesday</h3>
+            <p>Bible Study</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-light text-center p-4">
+            <img src="images/outreach.jpg" class="d-block mx-auto mb-3 rounded" alt="Outreach" style="max-height:150px;"/>
+            <h3>Thursday</h3>
+            <p>Outreach</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-light text-center p-4">
+            <img src="images/worship.jpg" class="d-block mx-auto mb-3 rounded" alt="Worship Night" style="max-height:150px;"/>
+            <h3>Friday</h3>
+            <p>Worship Night</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-light text-center p-4">
+            <img src="images/men-ministry.jpg" class="d-block mx-auto mb-3 rounded" alt="Men's Ministry" style="max-height:150px;"/>
+            <h3>Saturday</h3>
+            <p>Men's Ministry</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-light text-center p-4">
+            <img src="images/sunday-service.jpg" class="d-block mx-auto mb-3 rounded" alt="Main Service" style="max-height:150px;"/>
+            <h3>Sunday</h3>
+            <p>Main Service</p>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#programsCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#programsCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    <!-- Testimonies Section -->
+    <h2 class="mt-5 mb-3 text-primary">
+      <a href="testimonies.html" class="btn btn-primary">Testimonies</a>
+    </h2>
+    <div
+      id="testimonyCarousel"
+      class="carousel slide"
+      data-bs-ride="carousel"
+      data-bs-interval="4000"
+      data-bs-wrap="true"
+      data-bs-pause="false"
+    >
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="card bg-secondary text-white p-4 text-center">
+            <img src="images/testimony1.jpg" class="d-block mx-auto mb-3 rounded" alt="Testimony Jane" style="max-height:150px;"/>
+            <blockquote class="blockquote">
+              "God healed me completely!"
+            </blockquote>
+            <footer class="blockquote-footer text-white">Jane</footer>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-secondary text-white p-4 text-center">
+            <img src="images/testimony2.jpg" class="d-block mx-auto mb-3 rounded" alt="Testimony Mark" style="max-height:150px;"/>
+            <blockquote class="blockquote">
+              "I found peace and joy through Jesus."
+            </blockquote>
+            <footer class="blockquote-footer text-white">Mark</footer>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-secondary text-white p-4 text-center">
+            <img src="images/testimony3.jpg" class="d-block mx-auto mb-3 rounded" alt="Testimony Sarah" style="max-height:150px;"/>
+            <blockquote class="blockquote">
+              "My prayers were answered in an amazing way."
+            </blockquote>
+            <footer class="blockquote-footer text-white">Sarah</footer>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#testimonyCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#testimonyCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    <!-- Departments Section -->
+    <h2 class="mt-5 mb-3 text-primary">
+      <a href="departments.html" class="btn btn-primary">Departments</a>
+    </h2>
+    <div
+      id="departmentsCarousel"
+      class="carousel slide"
+      data-bs-ride="carousel"
+      data-bs-interval="3500"
+      data-bs-wrap="true"
+      data-bs-pause="false"
+    >
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="card bg-info text-white p-4 text-center">
+            <img src="images/youth-ministry.jpg" class="d-block mx-auto mb-3 rounded" alt="Youth Ministry" style="max-height:150px;"/>
+            <h3>Youth Ministry</h3>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-info text-white p-4 text-center">
+            <img src="images/women-ministry.jpg" class="d-block mx-auto mb-3 rounded" alt="Women's Ministry" style="max-height:150px;"/>
+            <h3>Women's Ministry</h3>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-info text-white p-4 text-center">
+            <img src="images/music-ministry.jpg" class="d-block mx-auto mb-3 rounded" alt="Music Ministry" style="max-height:150px;"/>
+            <h3>Music Ministry</h3>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-info text-white p-4 text-center">
+            <img src="images/outreach-team.jpg" class="d-block mx-auto mb-3 rounded" alt="Outreach Team" style="max-height:150px;"/>
+            <h3>Outreach Team</h3>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-info text-white p-4 text-center">
+            <img src="images/prayer-ministry.jpg" class="d-block mx-auto mb-3 rounded" alt="Prayer Ministry" style="max-height:150px;"/>
+            <h3>Prayer Ministry</h3>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#departmentsCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#departmentsCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    <!-- Sermons Section -->
+    <h2 class="mt-5 mb-3 text-primary">
+      <a href="sermons.html" class="btn btn-primary">Sermons</a>
+    </h2>
+    <div
+      id="sermonsCarousel"
+      class="carousel slide"
+      data-bs-ride="carousel"
+      data-bs-interval="3000"
+      data-bs-wrap="true"
+      data-bs-pause="false"
+    >
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="card bg-warning p-4 text-center">
+            <img src="images/sermon1.jpg" class="d-block mx-auto mb-3 rounded" alt="Sermon 1" style="max-height:150px;"/>
+            <h3>Sermon 1</h3>
+            <p>Faith & Trust</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-warning p-4 text-center">
+            <img src="images/sermon2.jpg" class="d-block mx-auto mb-3 rounded" alt="Sermon 2" style="max-height:150px;"/>
+            <h3>Sermon 2</h3>
+            <p>Grace & Mercy</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-warning p-4 text-center">
+            <img src="images/sermon3.jpg" class="d-block mx-auto mb-3 rounded" alt="Sermon 3" style="max-height:150px;"/>
+            <h3>Sermon 3</h3>
+            <p>The Kingdom of God</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card bg-warning p-4 text-center">
+            <img src="images/sermon4.jpg" class="d-block mx-auto mb-3 rounded" alt="Sermon 4" style="max-height:150px;"/>
+            <h3>Sermon 4</h3>
+            <p>Living in the Spirit</p>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#sermonsCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#sermonsCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+
+  <!-- Your custom JS -->
+  <script src="homepage.js"></script>
+</body>
+</html>
