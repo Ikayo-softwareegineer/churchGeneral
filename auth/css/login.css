@@ -1,0 +1,10 @@
+/* centring eye icon inside pw input */
+.toggle-pw {
+  position: absolute;
+  top: 75%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  opacity: 0.6;
+}
+.toggle-pw:hover { opacity: 1; }
