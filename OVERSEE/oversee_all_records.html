@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Church Records Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="text-center mb-4">📋 Church Records Dashboard</h2>
+
+  <ul class="nav nav-tabs" id="recordTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="testimonies-tab" data-bs-toggle="tab" data-bs-target="#testimonies" type="button">Testimonies</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="sermons-tab" data-bs-toggle="tab" data-bs-target="#sermons" type="button">Sermons</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="announcements-tab" data-bs-toggle="tab" data-bs-target="#announcements" type="button">Announcements</button>
+    </li>
+  </ul>
+
+  <div class="tab-content mt-3">
+    <!-- Testimonies Table -->
+    <div class="tab-pane fade show active" id="testimonies" role="tabpanel">
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Replace with dynamic PHP or JS loop -->
+          <tr>
+            <td>God's Mercy</td>
+            <td>Healing</td>
+            <td>Video</td>
+            <td>Healed after prayer</td>
+            <td><button class="btn btn-warning btn-sm">Edit</button> <button class="btn btn-danger btn-sm">Delete</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sermons Table -->
+    <div class="tab-pane fade" id="sermons" role="tabpanel">
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Title</th>
+            <th>Speaker</th>
+            <th>Type</th>
+            <th>Summary</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Faith in the Storm</td>
+            <td>Pastor John</td>
+            <td>Audio</td>
+            <td>Encouragement in hard times</td>
+            <td><button class="btn btn-warning btn-sm">Edit</button> <button class="btn btn-danger btn-sm">Delete</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Announcements Table -->
+    <div class="tab-pane fade" id="announcements" role="tabpanel">
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Content</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Youth Conference</td>
+            <td>2025-07-15</td>
+            <td>All youths to gather at 3PM for prayer & teachings.</td>
+            <td><button class="btn btn-warning btn-sm">Edit</button> <button class="btn btn-danger btn-sm">Delete</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
