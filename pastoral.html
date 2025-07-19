@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pastoral Department Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://kit.fontawesome.com/a2e1e6d337.js" crossorigin="anonymous"></script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Top Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Church CMS</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTop">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTop">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link text-white" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#">Sermons</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#">Testimonies</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#">Appointments</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#">Departments</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="#">Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Wrapper for Sidebar and Content -->
+<div class="d-flex pt-5" id="wrapper">
+
+  <!-- Sidebar -->
+  <div class="bg-dark text-white p-3" id="sidebar">
+    <h5 class="mb-4"><i class="fas fa-cross"></i> Pastor Panel</h5>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a href="#" class="nav-link text-white" onclick="showSection('dashboard')"><i class="fas fa-home me-1"></i> Dashboard</a></li>
+      <li class="nav-item"><a href="#" class="nav-link text-white" onclick="showSection('appointments')"><i class="fas fa-calendar-check me-1"></i> Appointments</a></li>
+      <li class="nav-item"><a href="#" class="nav-link text-white" onclick="showSection('members')"><i class="fas fa-users me-1"></i> Members</a></li>
+      <li class="nav-item"><a href="#" class="nav-link text-white" onclick="showSection('treasury')"><i class="fas fa-wallet me-1"></i> Treasury</a></li>
+      <li class="nav-item"><a href="#" class="nav-link text-white" onclick="showSection('reports')"><i class="fas fa-file-alt me-1"></i> Reports</a></li>
+      <li class="nav-item"><a href="#" class="nav-link text-white" onclick="showSection('leaders')"><i class="fas fa-user-check me-1"></i> Leaders</a></li>
+    </ul>
+  </div>
+
+  <!-- Page Content -->
+  <div class="container-fluid p-4" id="content">
+
+    <!-- Hero Section -->
+    <div id="dashboard" class="section">
+      <div class="bg-image text-white p-5 rounded" style="background-image: url('https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?fit=crop&w=1500&q=80'); background-size: cover;">
+        <h2>Welcome Pastor David</h2>
+        <p class="lead">Here’s a quick overview of your department and responsibilities.</p>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <div class="card text-center shadow">
+            <div class="card-body">
+              <i class="fas fa-calendar-check fa-2x mb-2 text-primary"></i>
+              <h5 class="card-title">Approve Appointments</h5>
+              <p class="card-text">View and manage pastoral appointment requests.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center shadow">
+            <div class="card-body">
+              <i class="fas fa-users fa-2x mb-2 text-success"></i>
+              <h5 class="card-title">View Members</h5>
+              <p class="card-text">Access all registered members and departments.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center shadow">
+            <div class="card-body">
+              <i class="fas fa-wallet fa-2x mb-2 text-warning"></i>
+              <h5 class="card-title">Treasury Overview</h5>
+              <p class="card-text">Monitor church and department finances.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+<!-- Weekly Scripture and Pastor's Word -->
+<div class="row mt-4">
+  <div class="col-md-8">
+    <div class="card shadow mb-3">
+      <div class="card-header bg-success text-white">
+        📖 Weekly Scripture Inspiration
+      </div>
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <p>“For where two or three are gathered in my name, there am I among them.”</p>
+          <footer class="blockquote-footer text-muted">Matthew 18:20 (ESV)</footer>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="card shadow">
+      <div class="card-header bg-info text-white">
+        💬 Message from the Pastor
+      </div>
+      <div class="card-body">
+        <p>Dear Saints,</p>
+        <p>
+          As we enter a new week, let us continue to be a light in our homes, schools, and workplaces. 
+          This week's focus is on **Unity and Service** — let’s reach out to someone in need and remind 
+          them of God’s love.
+        </p>
+        <p>
+          Let’s also remember to pray for our upcoming youth revival service. Your leadership and guidance 
+          continue to be the backbone of this ministry. Thank you for being faithful.
+        </p>
+        <p><em>Stay blessed and lead well,</em><br><strong>Pastor David Okello</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="col-md-4">
+    <div class="card text-center mb-3 shadow-sm">
+      <div class="card-body">
+        <i class="fas fa-user-plus fa-2x text-primary mb-2"></i>
+        <h5 class="card-title">New Members</h5>
+        <p class="card-text display-6">+18</p>
+        <small class="text-muted">This Week</small>
+      </div>
+    </div>
+
+    <div class="card text-center mb-3 shadow-sm">
+      <div class="card-body">
+        <i class="fas fa-hands-helping fa-2x text-success mb-2"></i>
+        <h5 class="card-title">Active Departments</h5>
+        <p class="card-text display-6">9</p>
+        <small class="text-muted">Including Youth, Choir, Ushers</small>
+      </div>
+    </div>
+
+    <div class="card text-center mb-3 shadow-sm">
+      <div class="card-body">
+        <i class="fas fa-calendar-alt fa-2x text-warning mb-2"></i>
+        <h5 class="card-title">Upcoming Events</h5>
+        <p class="card-text">Youth Revival - July 21<br>Women’s Breakfast - July 28</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Appointments -->
+    <div id="appointments" class="section d-none">
+      <h3 class="mb-3">Approve Appointments</h3>
+      <table class="table table-bordered">
+        <thead class="table-light"><tr><th>Name</th><th>Date</th><th>Reason</th><th>Action</th></tr></thead>
+        <tbody id="appointmentsList"></tbody>
+      </table>
+    </div>
+
+    <!-- Members -->
+    <div id="members" class="section d-none">
+      <h3>All Members</h3>
+      <ul id="memberList" class="list-group"></ul>
+    </div>
+
+    <!-- Treasury -->
+    <div id="treasury" class="section d-none">
+      <h3>Treasury Overview</h3>
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135706.png" width="60" class="mb-3" alt="Treasury Icon"/>
+      <p><strong>Total Tithe:</strong> UGX 5,500,000</p>
+      <p><strong>Total Offertory:</strong> UGX 2,300,000</p>
+      <p><strong>Project Funds:</strong> UGX 7,800,000</p>
+    </div>
+
+    <!-- Reports -->
+    <div id="reports" class="section d-none">
+      <h3>Department Reports</h3>
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135810.png" width="60" class="mb-3" alt="Reports Icon"/>
+      <ul>
+        <li><a href="#">Youth Report - May 2025</a></li>
+        <li><a href="#">Worship Team Budget - Q2</a></li>
+      </ul>
+    </div>
+
+    <!-- Leaders -->
+    <div id="leaders" class="section d-none">
+      <h3>Approve Department Leaders</h3>
+      <ul id="leaderList" class="list-group"></ul>
+    </div>
+
+  </div>
+</div>
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-auto">
+  <div class="container">
+    <p class="mb-1">&copy; 2025 Holy Grace Church. All rights reserved.</p>
+    <p class="mb-0">
+      <a href="#" class="text-white text-decoration-underline">About</a> |
+      <a href="#" class="text-white text-decoration-underline">Contact</a> |
+      <span class="text-muted">Powered by CMS Team</span>
+    </p>
+  </div>
+</footer>
+
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

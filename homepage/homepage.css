@@ -1,0 +1,58 @@
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  font-weight: 700;
+  border-bottom: 3px solid #0d6efd;
+  padding-bottom: 6px;
+}
+
+/* Cards styling */
+.card {
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgb(0 0 0 / 0.1);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Carousel item container */
+.carousel-item {
+  min-height: 280px;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
+/* Carousel item headings */
+.carousel-item h3 {
+  margin-bottom: 10px;
+}
+
+/* Carousel control icons styling */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(13, 110, 253, 0.7);
+  border-radius: 50%;
+}
+
+/* --- New styles for images and captions --- */
+
+/* Carousel images with taller height and rounded corners */
+.carousel-item img {
+  height: 450px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* Caption box with rounded corners and semi-transparent background */
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  border-radius: 15px;
+  backdrop-filter: blur(4px);
+}
