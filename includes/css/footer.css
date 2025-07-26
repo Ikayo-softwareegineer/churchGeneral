@@ -1,0 +1,11 @@
+#progress-marquee-container {
+  overflow: hidden;
+  height: 30px; /* or whatever fits your design */
+  position: relative;
+}
+
+.progress-marquee {
+  font-weight: bold;
+  font-size: 1rem;
+  transition: transform 0.05s linear;
+}

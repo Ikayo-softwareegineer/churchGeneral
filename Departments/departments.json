@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "name": "Youth Department",
+    "history": "The Youth Department unites young people in spiritual growth and fellowship.",
+    "mission": "To nurture the youth into strong Christian leaders.",
+    "vision": "A generation of empowered, faithful youth impacting the church and society.",
+    "head_photo": "youth/head.png",
+    "head_contact": {
+      "phone": "+256700000001",
+      "email": "youth@church.org"
+    },
+    "carousel_images": [
+      "youth/slide1.png",
+      "youth/slide2.png",
+      "youth/slide3.png"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Choir Department",
+    "history": "The Choir Department leads worship through music and praise.",
+    "mission": "To inspire worshippers through spiritual songs.",
+    "vision": "A choir that glorifies God and touches hearts.",
+    "head_photo": "Choir/head.png",
+    "head_contact": {
+      "phone": "+256700000002",
+      "email": "choir@church.org"
+    },
+    "carousel_images": [
+      "Choir/slide1.png",
+      "Choir/slide2.png",
+      "Choir/slide3.png"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Children's Ministry",
+    "history": "Dedicated to nurturing young minds in Christian faith and values since 2010. Our ministry has grown from a small Sunday school class to a comprehensive program serving over 100 children.",
+    "mission": "To provide a safe, loving environment for children to grow spiritually, emotionally, and socially while learning about God's love.",
+    "vision": "Children who know Jesus personally and live according to His word, becoming future leaders of the church.",
+    "head_photo": "children/head.png",
+    "head_contact": {
+      "phone": "+256700000003",
+      "email": "children@church.org"
+    },
+    "carousel_images": [
+      "children/slide1.png",
+      "children/slide2.png",
+      "children/slide3.png"
+    ]
+  }
+]
