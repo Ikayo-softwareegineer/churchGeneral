@@ -1,835 +1,604 @@
-// Search functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.querySelector('.search-input');
-    const searchForm = document.querySelector('.search-bar');
-    
-    // Auto-submit search after typing stops
-    let searchTimeout;
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            if (this.value.length >= 3 || this.value.length === 0) {
-                searchForm.submit();
-            }
-        }, 500);
-    });
-    
-    // Clear search functionality
-    const clearSearchBtn = document.createElement('button');
-    clearSearchBtn.type = 'button';
-    clearSearchBtn.className = 'clear-search-btn';
-    clearSearchBtn.innerHTML = '<i class="fas fa-times"></i>';
-    clearSearchBtn.style.cssText = `
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #666;
-        cursor: pointer;
-        display: none;
-    `;
-    
-    searchInput.parentNode.style.position = 'relative';
-    searchInput.parentNode.appendChild(clearSearchBtn);
-    
-    clearSearchBtn.addEventListener('click', function() {
-        searchInput.value = '';
-        searchForm.submit();
-    });
-    
-    searchInput.addEventListener('input', function() {
-        clearSearchBtn.style.display = this.value ? 'block' : 'none';
-    });
-});
+// assets/js/app.js - Church Management System JavaScript
 
-// Filter functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            // Add loading state
-            document.body.style.cursor = 'wait';
-            
-            // Track filter clicks
-            console.log('Filter clicked:', this.textContent.trim());
-        });
-    });
-});
-
-// Tab functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const tabButtons = document.querySelectorAll('.custom-tab-btn');
-    
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            // Add loading state
-            document.body.style.cursor = 'wait';
-            
-            // Track tab clicks
-            console.log('Tab clicked:', this.textContent.trim());
-        });
-    });
-});
-
-// Card interactions
-document.addEventListener('DOMContentLoaded', function() {
-    const cards = document.querySelectorAll('.custom-card');
-    
-    cards.forEach(card => {
-        // Hover effects
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-        });
+class ChurchMediaSystem {
+    constructor() {
+        this.currentData = [];
+        this.currentType = 'sermons';
+        this.currentFilter = 'all';
+        this.audioPlayer = null;
+        this.currentAudio = null;
         
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-        
-        // Click tracking
-        const viewButton = card.querySelector('.btn-custom-primary');
-        if (viewButton) {
-            viewButton.addEventListener('click', function() {
-                console.log('Content viewed:', this.href);
-            });
+        this.init();
+    }
+    
+    init() {
+        this.bindEvents();
+        this.setupAudioPlayer();
+        this.loadInitialData();
+    }
+    
+    bindEvents() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', debounce(() => {
+                this.handleSearch();
+            }, 300));
         }
         
-        const downloadButton = card.querySelector('.btn-custom-secondary');
-        if (downloadButton) {
-            downloadButton.addEventListener('click', function() {
-                console.log('Content downloaded:', this.href);
+        // Filter buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.filter-buttons .btn')) {
+                this.handleFilter(e.target);
+            }
+        });
+        
+        // Tab switching
+        const tabButtons = document.querySelectorAll('[data-bs-toggle="pill"]');
+        tabButtons.forEach(button => {
+            button.addEventListener('shown.bs.tab', (e) => {
+                this.handleTabSwitch(e.target);
             });
-        }
-    });
-});
-
-// Enhanced media preview functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const mediaPreviews = document.querySelectorAll('.media-preview');
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            this.handleKeyboardShortcuts(e);
+        });
+    }
     
-    mediaPreviews.forEach(media => {
-        const overlay = media.parentNode.querySelector('.media-overlay');
+    loadInitialData() {
+        if (window.churchData) {
+            this.currentData = window.churchData.sermons;
+            this.currentType = 'sermons';
+        }
+    }
+    
+    handleTabSwitch(tab) {
+        const targetId = tab.getAttribute('data-bs-target').replace('#', '');
+        this.currentType = targetId;
+        this.currentData = window.churchData[targetId] || [];
         
-        // Pause all other media when one starts playing
-        media.addEventListener('play', function() {
-            mediaPreviews.forEach(otherMedia => {
-                if (otherMedia !== media && !otherMedia.paused) {
-                    otherMedia.pause();
-                }
-            });
-            
-            // Hide overlay when playing
-            if (overlay) {
-                overlay.classList.add('hidden');
-            }
-            
-            // Add playing class
-            this.classList.add('playing');
+        // Update filter buttons for the new tab
+        this.updateFilterButtons(targetId);
+        
+        // Reset search and filter
+        this.resetFilters();
+        
+        // Add animation to new content
+        this.animateContent(targetId);
+    }
+    
+    updateFilterButtons(type) {
+        const filterContainer = document.getElementById('filterButtons');
+        let filterHTML = '';
+        
+        if (type === 'sermons') {
+            filterHTML = `
+                <button class="btn btn-outline-primary active" data-filter="all">All</button>
+                <button class="btn btn-outline-primary" data-filter="recent">Recent</button>
+                <button class="btn btn-outline-primary" data-filter="popular">Popular</button>
+                <button class="btn btn-outline-primary" data-filter="series">Series</button>
+            `;
+        } else {
+            filterHTML = `
+                <button class="btn btn-outline-primary active" data-filter="all">All</button>
+                <button class="btn btn-outline-primary" data-filter="recent">Recent</button>
+                <button class="btn btn-outline-primary" data-filter="popular">Popular</button>
+                <button class="btn btn-outline-primary" data-filter="healing">Healing</button>
+            `;
+        }
+        
+        filterContainer.innerHTML = filterHTML;
+    }
+    
+    handleSearch() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        
+        if (query === '') {
+            this.showAllContent();
+            return;
+        }
+        
+        // Show loading state
+        this.showLoadingState();
+        
+        // Simulate API call delay
+        setTimeout(() => {
+            const filteredData = this.searchContent(query);
+            this.updateContentDisplay(filteredData);
+            this.hideLoadingState();
+        }, 300);
+    }
+    
+    searchContent(query) {
+        return this.currentData.filter(item => {
+            return (
+                item.title.toLowerCase().includes(query) ||
+                item.description.toLowerCase().includes(query) ||
+                (item.speaker && item.speaker.toLowerCase().includes(query)) ||
+                (item.author && item.author.toLowerCase().includes(query)) ||
+                item.tags.some(tag => tag.toLowerCase().includes(query))
+            );
         });
-        
-        // Show overlay when paused
-        media.addEventListener('pause', function() {
-            if (overlay) {
-                overlay.classList.remove('hidden');
-            }
-            this.classList.remove('playing');
+    }
+    
+    handleFilter(button) {
+        // Update active filter button
+        document.querySelectorAll('.filter-buttons .btn').forEach(btn => {
+            btn.classList.remove('active');
         });
+        button.classList.add('active');
         
-        // Add loading state
-        media.addEventListener('loadstart', function() {
-            this.style.opacity = '0.7';
-        });
+        this.currentFilter = button.dataset.filter;
         
-        media.addEventListener('canplay', function() {
-            this.style.opacity = '1';
-        });
+        // Show loading state
+        this.showLoadingState();
         
-        // Error handling
-        media.addEventListener('error', function() {
-            this.innerHTML = `
-                <div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px;">
-                    <i class="fas fa-exclamation-triangle" style="color: #dc3545; font-size: 2rem; margin-bottom: 1rem;"></i>
-                    <p>Media could not be loaded</p>
+        // Apply filter
+        setTimeout(() => {
+            const filteredData = this.filterContent(this.currentFilter);
+            this.updateContentDisplay(filteredData);
+            this.hideLoadingState();
+        }, 200);
+    }
+    
+    filterContent(filter) {
+        let filteredData = [...this.currentData];
+        
+        switch (filter) {
+            case 'recent':
+                filteredData.sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date));
+                break;
+                
+            case 'popular':
+                filteredData.sort((a, b) => b.views - a.views);
+                break;
+                
+            case 'series':
+                filteredData = filteredData.filter(item => item.series);
+                break;
+                
+            case 'healing':
+                filteredData = filteredData.filter(item => 
+                    item.tags.some(tag => 
+                        ['Healing', 'Miracle', 'Recovery', 'Deliverance'].includes(tag)
+                    )
+                );
+                break;
+                
+            default:
+                // 'all' - no filtering needed
+                break;
+        }
+        
+        return filteredData;
+    }
+    
+    updateContentDisplay(data) {
+        const gridId = this.currentType + 'Grid';
+        const grid = document.getElementById(gridId);
+        
+        if (!grid) return;
+        
+        if (data.length === 0) {
+            grid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="no-results">
+                        <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+                        <h4>No results found</h4>
+                        <p class="text-muted">Try adjusting your search or filter criteria</p>
+                    </div>
                 </div>
             `;
-        });
-    });
-});
-
-// Pagination functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const paginationLinks = document.querySelectorAll('.pagination .page-link');
-    
-    paginationLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            // Add loading state
-            document.body.style.cursor = 'wait';
-            
-            // Track pagination clicks
-            console.log('Page clicked:', this.href);
-        });
-    });
-});
-
-// Statistics animation
-document.addEventListener('DOMContentLoaded', function() {
-    const statNumbers = document.querySelectorAll('.stat-number');
-    
-    const animateNumber = (element, target) => {
-        let current = 0;
-        const increment = target / 50; // Animate over 50 steps
-        const timer = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-                current = target;
-                clearInterval(timer);
-            }
-            element.textContent = Math.floor(current).toLocaleString();
-        }, 20);
-    };
-    
-    // Animate stats when they come into view
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const target = parseInt(entry.target.textContent.replace(/,/g, ''));
-                animateNumber(entry.target, target);
-                observer.unobserve(entry.target);
-            }
-        });
-    });
-    
-    statNumbers.forEach(stat => {
-        observer.observe(stat);
-    });
-});
-
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + F to focus search
-    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-        e.preventDefault();
-        const searchInput = document.querySelector('.search-input');
-        if (searchInput) {
-            searchInput.focus();
-            searchInput.select();
-        }
-    }
-    
-    // Escape to clear search
-    if (e.key === 'Escape') {
-        const searchInput = document.querySelector('.search-input');
-        if (searchInput && searchInput.value) {
-            searchInput.value = '';
-            searchInput.form.submit();
-        }
-    }
-});
-
-// Infinite scroll (optional)
-let isLoading = false;
-let currentPage = 1;
-
-function loadMoreContent() {
-    if (isLoading) return;
-    
-    isLoading = true;
-    currentPage++;
-    
-    // Show loading indicator
-    const loadingIndicator = document.createElement('div');
-    loadingIndicator.className = 'loading-indicator';
-    loadingIndicator.innerHTML = `
-        <div style="text-align: center; padding: 2rem;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
-            <p>Loading more content...</p>
-        </div>
-    `;
-    
-    const contentRow = document.querySelector('.row');
-    if (contentRow) {
-        contentRow.appendChild(loadingIndicator);
-    }
-    
-    // Simulate loading (replace with actual AJAX call)
-    setTimeout(() => {
-        if (loadingIndicator.parentNode) {
-            loadingIndicator.parentNode.removeChild(loadingIndicator);
-        }
-        isLoading = false;
-    }, 1000);
-}
-
-// Scroll to top functionality
-function scrollToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-}
-
-// Add scroll to top button
-document.addEventListener('DOMContentLoaded', function() {
-    const scrollToTopBtn = document.createElement('button');
-    scrollToTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
-    scrollToTopBtn.className = 'scroll-to-top-btn';
-    scrollToTopBtn.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        cursor: pointer;
-        display: none;
-        z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        transition: all 0.3s;
-    `;
-    
-    document.body.appendChild(scrollToTopBtn);
-    
-    scrollToTopBtn.addEventListener('click', scrollToTop);
-    
-    // Show/hide scroll to top button
-    window.addEventListener('scroll', function() {
-        if (window.pageYOffset > 300) {
-            scrollToTopBtn.style.display = 'block';
-        } else {
-            scrollToTopBtn.style.display = 'none';
-        }
-    });
-});
-
-// Performance optimization
-document.addEventListener('DOMContentLoaded', function() {
-    // Lazy load images and videos
-    const mediaElements = document.querySelectorAll('img, video');
-    
-    const mediaObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const element = entry.target;
-                if (element.dataset.src) {
-                    element.src = element.dataset.src;
-                    element.removeAttribute('data-src');
-                }
-                mediaObserver.unobserve(element);
-            }
-        });
-    });
-    
-    mediaElements.forEach(element => {
-        if (element.dataset.src) {
-            mediaObserver.observe(element);
-        }
-    });
-}); 
-
-// Sermons and Testimonies JavaScript with Media Preview
-
-// Preview Modal Functions with Media Playback
-function showPreview(id, title, author, description, filePath, fileType, type, category, date, views, fileSize) {
-    console.log('showPreview called with:', { id, title, author, fileType, type, filePath });
-    
-    const modal = document.getElementById('previewModal');
-    if (!modal) {
-        console.error('Preview modal not found!');
-        return;
-    }
-    
-    const thumbnail = document.getElementById('previewThumbnail');
-    const icon = document.getElementById('previewIcon');
-    const mediaSection = document.getElementById('previewMediaSection');
-    const mediaPlayer = document.getElementById('previewMediaPlayer');
-    const mediaLoading = document.getElementById('previewMediaLoading');
-    
-    // Set modal content
-    document.getElementById('previewTitle').textContent = title;
-    document.getElementById('previewAuthor').textContent = author;
-    document.getElementById('previewDescription').textContent = description;
-    document.getElementById('previewDate').textContent = date;
-    document.getElementById('previewViews').textContent = views;
-    document.getElementById('previewFileSize').textContent = fileSize;
-    document.getElementById('previewFileType').textContent = getFileTypeDisplay(fileType);
-    document.getElementById('previewCategory').textContent = category || 'General';
-    
-    // Set action buttons
-    const playBtn = document.getElementById('previewPlayBtn');
-    const downloadBtn = document.getElementById('previewDownloadBtn');
-    
-    playBtn.href = `view-content.php?id=${id}`;
-    downloadBtn.href = filePath;
-    
-    // Check if it's a media file (video or audio)
-    if (isVideo(fileType) || isAudio(fileType)) {
-        // Show media player
-        mediaSection.style.display = 'block';
-        thumbnail.style.display = 'none';
-        
-        // Set media type info
-        const mediaIcon = document.getElementById('previewMediaIcon');
-        const mediaType = document.getElementById('previewMediaType');
-        
-        if (isVideo(fileType)) {
-            mediaIcon.className = 'fas fa-play';
-            mediaType.textContent = 'Video';
-            playBtn.innerHTML = '<i class="fas fa-play"></i> Watch Full Video';
-        } else if (isAudio(fileType)) {
-            mediaIcon.className = 'fas fa-volume-up';
-            mediaType.textContent = 'Audio';
-            playBtn.innerHTML = '<i class="fas fa-volume-up"></i> Listen Full Audio';
+            return;
         }
         
-        // Create media element
-        createMediaPlayer(filePath, fileType, mediaPlayer, mediaLoading);
+        grid.innerHTML = '';
         
-    } else {
-        // Show thumbnail for non-media files
-        mediaSection.style.display = 'none';
-        thumbnail.style.display = 'flex';
-        setPreviewThumbnail(fileType, type);
-        playBtn.innerHTML = '<i class="fas fa-eye"></i> View Full Content';
-    }
-    
-    // Show modal
-    modal.style.display = 'block';
-    console.log('Modal should now be visible');
-    
-    // Add backdrop click to close
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closePreview();
-        }
-    });
-    
-    // Add escape key to close
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.style.display === 'block') {
-            closePreview();
-        }
-    });
-}
-
-function createMediaPlayer(filePath, fileType, mediaPlayer, mediaLoading) {
-    // Clear existing content
-    mediaPlayer.innerHTML = '';
-    
-    // Show loading
-    mediaLoading.style.display = 'flex';
-    
-    if (isVideo(fileType)) {
-        // Create video element
-        const video = document.createElement('video');
-        video.controls = true;
-        video.preload = 'metadata';
-        video.style.width = '100%';
-        video.style.height = '100%';
-        video.style.borderRadius = '10px';
-        
-        // Add video source
-        const source = document.createElement('source');
-        source.src = filePath;
-        source.type = getVideoMimeType(fileType);
-        video.appendChild(source);
-        
-        // Add error handling
-        video.addEventListener('error', function() {
-            showMediaError(mediaPlayer, 'Video could not be loaded');
-        });
-        
-        // Add loaded metadata
-        video.addEventListener('loadedmetadata', function() {
-            mediaLoading.style.display = 'none';
-            mediaPlayer.appendChild(video);
-            
-            // Set duration
-            const duration = document.getElementById('previewMediaDuration');
-            if (duration) {
-                duration.textContent = formatTime(video.duration);
-            }
-        });
-        
-        // Add loading error
-        video.addEventListener('error', function() {
-            mediaLoading.style.display = 'none';
-            showMediaError(mediaPlayer, 'Video could not be loaded');
-        });
-        
-    } else if (isAudio(fileType)) {
-        // Create audio element
-        const audio = document.createElement('audio');
-        audio.controls = true;
-        audio.preload = 'metadata';
-        audio.style.width = '100%';
-        audio.style.height = '60px';
-        audio.style.borderRadius = '10px';
-        
-        // Add audio source
-        const source = document.createElement('source');
-        source.src = filePath;
-        source.type = getAudioMimeType(fileType);
-        audio.appendChild(source);
-        
-        // Add error handling
-        audio.addEventListener('error', function() {
-            showMediaError(mediaPlayer, 'Audio could not be loaded');
-        });
-        
-        // Add loaded metadata
-        audio.addEventListener('loadedmetadata', function() {
-            mediaLoading.style.display = 'none';
-            mediaPlayer.appendChild(audio);
-            
-            // Set duration
-            const duration = document.getElementById('previewMediaDuration');
-            if (duration) {
-                duration.textContent = formatTime(audio.duration);
-            }
-        });
-        
-        // Add loading error
-        audio.addEventListener('error', function() {
-            mediaLoading.style.display = 'none';
-            showMediaError(mediaPlayer, 'Audio could not be loaded');
-        });
-    }
-}
-
-function showMediaError(mediaPlayer, message) {
-    mediaPlayer.innerHTML = `
-        <div class="preview-media-error">
-            <i class="fas fa-exclamation-triangle"></i>
-            <div>
-                <strong>Media Error</strong><br>
-                ${message}
-            </div>
-        </div>
-    `;
-}
-
-function getVideoMimeType(fileType) {
-    const mimeTypes = {
-        'mp4': 'video/mp4',
-        'avi': 'video/avi',
-        'mov': 'video/quicktime',
-        'webm': 'video/webm'
-    };
-    return mimeTypes[fileType.toLowerCase()] || 'video/mp4';
-}
-
-function getAudioMimeType(fileType) {
-    const mimeTypes = {
-        'mp3': 'audio/mpeg',
-        'wav': 'audio/wav',
-        'ogg': 'audio/ogg',
-        'aac': 'audio/aac'
-    };
-    return mimeTypes[fileType.toLowerCase()] || 'audio/mpeg';
-}
-
-function formatTime(seconds) {
-    if (isNaN(seconds)) return '--:--';
-    
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-}
-
-function closePreview() {
-    console.log('closePreview called');
-    const modal = document.getElementById('previewModal');
-    if (modal) {
-        // Stop any playing media
-        const mediaPlayer = document.getElementById('previewMediaPlayer');
-        if (mediaPlayer) {
-            const video = mediaPlayer.querySelector('video');
-            const audio = mediaPlayer.querySelector('audio');
-            
-            if (video) {
-                video.pause();
-                video.currentTime = 0;
-            }
-            
-            if (audio) {
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        }
-        
-        modal.style.display = 'none';
-        console.log('Modal closed');
-    }
-}
-
-function setPreviewThumbnail(fileType, contentType) {
-    console.log('setPreviewThumbnail called with:', { fileType, contentType });
-    
-    const thumbnail = document.getElementById('previewThumbnail');
-    const icon = document.getElementById('previewIcon');
-    
-    if (!thumbnail || !icon) {
-        console.error('Thumbnail or icon elements not found!');
-        return;
-    }
-    
-    // Set background based on content type
-    if (contentType === 'sermon') {
-        thumbnail.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-    } else {
-        thumbnail.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
-    }
-    
-    // Set icon based on file type
-    if (isVideo(fileType)) {
-        icon.className = 'fas fa-play';
-    } else if (isAudio(fileType)) {
-        icon.className = 'fas fa-volume-up';
-    } else if (isPDF(fileType)) {
-        icon.className = 'fas fa-file-pdf';
-    } else if (isText(fileType)) {
-        icon.className = 'fas fa-file-alt';
-    } else {
-        icon.className = 'fas fa-file';
-    }
-    
-    console.log('Thumbnail set with icon:', icon.className);
-}
-
-function getFileTypeDisplay(fileType) {
-    const fileTypeMap = {
-        'video': 'Video',
-        'mp4': 'Video',
-        'avi': 'Video',
-        'mov': 'Video',
-        'audio': 'Audio',
-        'mp3': 'Audio',
-        'wav': 'Audio',
-        'pdf': 'PDF Document',
-        'text': 'Text Document',
-        'txt': 'Text Document'
-    };
-    
-    return fileTypeMap[fileType.toLowerCase()] || 'File';
-}
-
-function isVideo(fileType) {
-    return ['video', 'mp4', 'avi', 'mov'].includes(fileType.toLowerCase());
-}
-
-function isAudio(fileType) {
-    return ['audio', 'mp3', 'wav'].includes(fileType.toLowerCase());
-}
-
-function isPDF(fileType) {
-    return fileType.toLowerCase() === 'pdf';
-}
-
-function isText(fileType) {
-    return ['text', 'txt'].includes(fileType.toLowerCase());
-}
-
-// Enhanced card interactions
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing preview functionality...');
-    
-    // Add hover effects to cards
-    const cards = document.querySelectorAll('.custom-card');
-    console.log('Found', cards.length, 'content cards');
-    
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-    
-    // Add click tracking for preview buttons
-    const previewButtons = document.querySelectorAll('.btn-preview');
-    console.log('Found', previewButtons.length, 'preview buttons');
-    
-    previewButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            console.log('Preview button clicked!');
-            // Track preview interaction (you could send this to your server)
-            console.log('Content previewed:', this.getAttribute('onclick'));
-        });
-    });
-    
-    // Add smooth scrolling for search results
-    const searchForm = document.querySelector('.search-bar');
-    if (searchForm) {
-        searchForm.addEventListener('submit', function() {
-            setTimeout(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            }, 100);
+        data.forEach((item, index) => {
+            const card = this.createContentCard(item, this.currentType === 'sermons');
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('fade-in');
+            grid.appendChild(card);
         });
     }
     
-    // Add loading states for preview modal
-    const previewModal = document.getElementById('previewModal');
-    if (previewModal) {
-        console.log('Preview modal found in DOM');
-        previewModal.addEventListener('show', function() {
-            // Add loading animation
-            const thumbnail = document.getElementById('previewThumbnail');
-            thumbnail.style.opacity = '0.7';
-        });
+    createContentCard(item, isSermon) {
+        const col = document.createElement('div');
+        col.className = 'col-lg-4 col-md-6 mb-4 content-item';
+        col.setAttribute('data-tags', item.tags.join(','));
         
-        previewModal.addEventListener('shown', function() {
-            // Remove loading animation
-            const thumbnail = document.getElementById('previewThumbnail');
-            thumbnail.style.opacity = '1';
-        });
-    } else {
-        console.error('Preview modal not found in DOM!');
-    }
-    
-    console.log('Preview functionality initialized successfully');
-});
-
-// Export functions for potential use in other scripts
-window.PreviewManager = {
-    showPreview,
-    closePreview,
-    setPreviewThumbnail,
-    getFileTypeDisplay,
-    isVideo,
-    isAudio,
-    isPDF,
-    isText
-};
-
-// Global error handler for debugging
-window.addEventListener('error', function(e) {
-    console.error('JavaScript error:', e.error);
-    console.error('Error details:', e);
-});
-
-// Enhanced media functionality
-function playMedia(button) {
-    const mediaContainer = button.closest('.media-container');
-    const media = mediaContainer.querySelector('.media-preview');
-    const overlay = mediaContainer.querySelector('.media-overlay');
-    
-    if (media) {
-        // Pause all other media first
-        const allMedia = document.querySelectorAll('.media-preview');
-        allMedia.forEach(otherMedia => {
-            if (otherMedia !== media && !otherMedia.paused) {
-                otherMedia.pause();
-            }
-        });
+        const speakerOrAuthor = isSermon ? item.speaker : item.author;
+        const typeLabel = isSermon ? 'Speaker' : 'Shared by';
         
-        // Play the selected media
-        media.play().then(() => {
-            if (overlay) {
-                overlay.classList.add('hidden');
-            }
-            media.classList.add('playing');
-        }).catch(error => {
-            console.error('Error playing media:', error);
-            showMediaError(media, 'Failed to play media');
-        });
-    }
-}
-
-function playMediaInCard(button, filePath, fileType, title) {
-    // Create a temporary modal for immediate playback
-    const modal = document.createElement('div');
-    modal.className = 'preview-modal';
-    modal.style.display = 'block';
-    modal.style.zIndex = '9999';
-    
-    const isVideo = fileType.toLowerCase().includes('video') || ['mp4', 'avi', 'mov'].includes(fileType.toLowerCase());
-    const isAudio = fileType.toLowerCase().includes('audio') || ['mp3', 'wav', 'ogg'].includes(fileType.toLowerCase());
-    
-    if (isVideo || isAudio) {
-        modal.innerHTML = `
-            <div class="preview-modal-content" style="max-width: 800px; margin: 5% auto;">
-                <div class="preview-header">
-                    <h3 class="preview-title">${title}</h3>
-                    <button class="preview-close" onclick="this.closest('.preview-modal').remove()">&times;</button>
-                </div>
-                <div class="preview-body">
-                    <div class="preview-media-section">
-                        <div class="preview-media-info">
-                            <div class="preview-media-type">
-                                <i class="fas fa-${isVideo ? 'play' : 'volume-up'}"></i>
-                                <span>${isVideo ? 'Video' : 'Audio'}</span>
-                            </div>
-                        </div>
-                        <div class="preview-media-player">
-                            <${isVideo ? 'video' : 'audio'} controls style="width: 100%; ${isVideo ? 'max-height: 400px;' : 'height: 60px;'} border-radius: 10px;">
-                                <source src="${filePath}" type="${isVideo ? 'video/mp4' : 'audio/mpeg'}">
-                                Your browser does not support the ${isVideo ? 'video' : 'audio'} tag.
-                            </${isVideo ? 'video' : 'audio'}>
-                        </div>
+        col.innerHTML = `
+            <div class="card content-card h-100">
+                <div class="card-img-container">
+                    <img src="${item.thumbnail}" class="card-img-top" alt="${this.escapeHtml(item.title)}" 
+                         onerror="this.src='assets/images/placeholder.jpg'">
+                    <div class="play-overlay">
+                        <button class="btn btn-play" onclick="churchMedia.playContent(${item.id}, '${this.currentType}')">
+                            <i class="fas fa-play"></i>
+                        </button>
                     </div>
-                    <div class="preview-actions">
-                        <a href="${filePath}" class="preview-btn preview-btn-secondary" download>
-                            <i class="fas fa-download"></i> Download
-                        </a>
-                        <button class="preview-btn preview-btn-primary" onclick="this.closest('.preview-modal').remove()">
-                            <i class="fas fa-times"></i> Close
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${this.escapeHtml(item.title)}</h5>
+                    <div class="card-meta mb-2">
+                        <small class="text-muted">
+                            <i class="fas fa-user me-1"></i>${this.escapeHtml(speakerOrAuthor)}
+                            <i class="fas fa-calendar ms-3 me-1"></i>${this.formatDate(item.date)}
+                        </small>
+                    </div>
+                    <div class="tags mb-2">
+                        ${item.tags.map(tag => `<span class="badge tag-badge">${this.escapeHtml(tag)}</span>`).join('')}
+                    </div>
+                    <p class="card-text flex-grow-1">${this.escapeHtml(item.description)}</p>
+                    <div class="stats mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>${item.duration}
+                            <i class="fas fa-eye ms-3 me-1"></i>${this.formatNumber(item.views)}
+                            <i class="fas fa-heart ms-3 me-1"></i>${item.likes}
+                        </small>
+                    </div>
+                    <div class="card-actions d-flex gap-2">
+                        <button class="btn btn-primary flex-fill" onclick="churchMedia.playContent(${item.id}, '${this.currentType}')">
+                            <i class="fas fa-play me-1"></i>Play
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="churchMedia.shareContent(${item.id}, '${this.currentType}')">
+                            <i class="fas fa-share"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="churchMedia.addToFavorites(${item.id}, '${this.currentType}')">
+                            <i class="fas fa-bookmark"></i>
                         </button>
                     </div>
                 </div>
             </div>
         `;
         
-        document.body.appendChild(modal);
+        return col;
+    }
+    
+    playContent(id, type) {
+        const data = window.churchData[type];
+        const item = data.find(item => item.id === id);
         
-        // Add backdrop click to close
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.remove();
+        if (!item) {
+            this.showNotification('Content not found', 'error');
+            return;
+        }
+        
+        this.openAudioPlayer(item, type);
+        this.updatePlayCount(id, type);
+    }
+    
+    openAudioPlayer(item, type) {
+        const modal = new bootstrap.Modal(document.getElementById('audioPlayerModal'));
+        const modalContent = document.getElementById('audioPlayerContent');
+        
+        const speakerOrAuthor = type === 'sermons' ? item.speaker : item.author;
+        
+        modalContent.innerHTML = `
+            <div class="audio-player">
+                <div class="audio-info">
+                    <div class="audio-title">${this.escapeHtml(item.title)}</div>
+                    <div class="audio-meta">by ${this.escapeHtml(speakerOrAuthor)} • ${item.duration}</div>
+                </div>
+                
+                <div class="audio-controls">
+                    <button class="btn btn-outline-secondary" onclick="churchMedia.previousTrack()">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="btn btn-primary" id="playPauseBtn" onclick="churchMedia.togglePlayPause()">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="churchMedia.nextTrack()">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" onclick="churchMedia.seekAudio(event)">
+                        <div class="progress-fill" id="audioProgress"></div>
+                    </div>
+                    <div class="time-info">
+                        <span id="currentTime">0:00</span>
+                        <span id="totalTime">${item.duration}</span>
+                    </div>
+                </div>
+                
+                <div class="volume-control">
+                    <i class="fas fa-volume-down"></i>
+                    <input type="range" class="volume-slider" min="0" max="100" value="80" 
+                           onchange="churchMedia.setVolume(this.value)">
+                    <i class="fas fa-volume-up"></i>
+                </div>
+            </div>
+        `;
+        
+        modal.show();
+        this.initializeAudioPlayer(item);
+    }
+    
+    initializeAudioPlayer(item) {
+        // In a real application, you would load the actual audio file
+        // For demonstration, we'll simulate audio playback
+        this.currentAudio = {
+            item: item,
+            isPlaying: false,
+            currentTime: 0,
+            duration: this.parseTimeToSeconds(item.duration)
+        };
+        
+        this.showNotification(`Now playing: ${item.title}`, 'success');
+    }
+    
+    togglePlayPause() {
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const icon = playPauseBtn.querySelector('i');
+        
+        if (this.currentAudio.isPlaying) {
+            // Pause
+            icon.className = 'fas fa-play';
+            this.currentAudio.isPlaying = false;
+            this.showNotification('Paused', 'info');
+        } else {
+            // Play
+            icon.className = 'fas fa-pause';
+            this.currentAudio.isPlaying = true;
+            this.startAudioProgress();
+            this.showNotification('Playing', 'success');
+        }
+    }
+    
+    startAudioProgress() {
+        if (!this.currentAudio.isPlaying) return;
+        
+        const progressFill = document.getElementById('audioProgress');
+        const currentTimeSpan = document.getElementById('currentTime');
+        
+        if (progressFill && currentTimeSpan) {
+            this.currentAudio.currentTime += 1;
+            const percentage = (this.currentAudio.currentTime / this.currentAudio.duration) * 100;
+            
+            progressFill.style.width = percentage + '%';
+            currentTimeSpan.textContent = this.formatTime(this.currentAudio.currentTime);
+            
+            if (this.currentAudio.currentTime < this.currentAudio.duration) {
+                setTimeout(() => this.startAudioProgress(), 1000);
+            } else {
+                this.currentAudio.isPlaying = false;
+                document.getElementById('playPauseBtn').querySelector('i').className = 'fas fa-play';
             }
-        });
+        }
+    }
+    
+    seekAudio(event) {
+        if (!this.currentAudio) return;
         
-        // Add escape key to close
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                modal.remove();
+        const progressBar = event.currentTarget;
+        const rect = progressBar.getBoundingClientRect();
+        const percentage = (event.clientX - rect.left) / rect.width;
+        
+        this.currentAudio.currentTime = Math.floor(percentage * this.currentAudio.duration);
+        
+        const progressFill = document.getElementById('audioProgress');
+        const currentTimeSpan = document.getElementById('currentTime');
+        
+        if (progressFill && currentTimeSpan) {
+            progressFill.style.width = (percentage * 100) + '%';
+            currentTimeSpan.textContent = this.formatTime(this.currentAudio.currentTime);
+        }
+    }
+    
+    setVolume(volume) {
+        // In a real application, you would set the actual audio volume
+        this.showNotification(`Volume set to ${volume}%`, 'info');
+    }
+    
+    previousTrack() {
+        this.showNotification('Previous track functionality', 'info');
+    }
+    
+    nextTrack() {
+        this.showNotification('Next track functionality', 'info');
+    }
+    
+    shareContent(id, type) {
+        const data = window.churchData[type];
+        const item = data.find(item => item.id === id);
+        
+        if (!item) return;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: item.title,
+                text: item.description,
+                url: window.location.href + `#${type}-${id}`
+            }).then(() => {
+                this.showNotification('Content shared successfully!', 'success');
+            }).catch((error) => {
+                this.fallbackShare(item);
+            });
+        } else {
+            this.fallbackShare(item);
+        }
+    }
+    
+    fallbackShare(item) {
+        const shareUrl = window.location.href + `#${item.id}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            this.showNotification('Link copied to clipboard!', 'success');
+        }).catch(() => {
+            this.showNotification('Unable to share. Please copy the URL manually.', 'error');
+        });
+    }
+    
+    addToFavorites(id, type) {
+        // Make AJAX call to PHP backend
+        fetch(`?action=favorite&id=${id}&type=${type}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showNotification('Added to favorites!', 'success');
+                    this.updateFavoriteButton(id, type);
+                } else {
+                    this.showNotification('Failed to add to favorites', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.showNotification('Network error', 'error');
+            });
+    }
+    
+    updatePlayCount(id, type) {
+        // Update play count via AJAX
+        fetch(`?action=play&id=${id}&type=${type}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Play count updated');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating play count:', error);
+            });
+    }
+    
+    updateFavoriteButton(id, type) {
+        const button = document.querySelector(`button[onclick="churchMedia.addToFavorites(${id}, '${type}')"]`);
+        if (button) {
+            button.innerHTML = '<i class="fas fa-bookmark text-warning"></i>';
+            button.classList.add('favorited');
+        }
+    }
+    
+    showLoadingState() {
+        const grids = document.querySelectorAll('[id$="Grid"]');
+        grids.forEach(grid => {
+            if (grid.closest('.tab-pane.active')) {
+                grid.innerHTML = `
+                    <div class="col-12">
+                        <div class="loading-spinner active">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading content...</p>
+                        </div>
+                    </div>
+                `;
             }
         });
     }
-}
-
-// Track media interactions
-function trackMediaInteraction(action, mediaType, title) {
-    console.log(`Media ${action}:`, { mediaType, title, timestamp: new Date().toISOString() });
-    // Here you could send analytics data to your server
-} 
-
-// Enable download button after media is viewed
-    document.querySelectorAll('.media-preview').forEach(function(media) {
-        // Get the card's download button ID from the parent card
-        const card = media.closest('.custom-card');
-        if (card) {
-            const downloadBtn = card.querySelector('.download-btn');
-            if (downloadBtn) {
-                // Initially disable (redundant if already set in HTML, but safe)
-                downloadBtn.setAttribute('disabled', 'disabled');
-                // Enable after 50% of media is played
-                let enabled = false;
-                media.addEventListener('timeupdate', function() {
-                    if (!enabled && media.duration && media.currentTime >= media.duration / 2) {
-                        downloadBtn.removeAttribute('disabled');
-                        enabled = true;
+    
+    hideLoadingState() {
+        const spinners = document.querySelectorAll('.loading-spinner');
+        spinners.forEach(spinner => {
+            spinner.classList.remove('active');
+        });
+    }
+    
+    showAllContent() {
+        this.updateContentDisplay(this.currentData);
+    }
+    
+    resetFilters() {
+        document.getElementById('searchInput').value = '';
+        this.currentFilter = 'all';
+        
+        document.querySelectorAll('.filter-buttons .btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.filter === 'all') {
+                btn.classList.add('active');
+            }
+        });
+    }
+    
+    animateContent(tabId) {
+        const tabPane = document.getElementById(tabId);
+        if (tabPane) {
+            tabPane.classList.add('slide-up');
+            setTimeout(() => {
+                tabPane.classList.remove('slide-up');
+            }, 500);
+        }
+    }
+    
+    handleKeyboardShortcuts(e) {
+        if (e.ctrlKey || e.metaKey) {
+            switch (e.key) {
+                case 'f':
+                case 'F':
+                    e.preventDefault();
+                    document.getElementById('searchInput').focus();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    if (this.currentAudio && this.currentAudio.isPlaying !== undefined) {
+                        this.togglePlayPause();
                     }
-                });
+                    break;
             }
         }
-    }); 
+        
+        if (e.key === 'Escape') {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('audioPlayerModal'));
+            if (modal) {
+                modal.hide();
+            }
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        // Create toast notification
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 5000);
+    }
+    
+    // Utility functions
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+    
+    formatNumber(num) {
+        return new Intl.NumberFormat('en-US').format(num);
+    }
+    
+    formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+    
+    parseTimeToSeconds(timeString) {
+        const parts = timeString.split(':');
+        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    }
+    
+  }

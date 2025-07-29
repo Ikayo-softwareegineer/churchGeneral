@@ -2,7 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   // Fetch header (from includes/)
-  fetch("/CMS/includes/header.html")
+  fetch("/churchGeneral/includes/header.html")
     .then(res => res.text())
     .then(data => {
       document.getElementById("header").innerHTML = data;
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(err => console.error("Header load failed:", err));
 
   // Fetch footer (from includes/)
-  fetch("/CMS/includes/footer.html")
+  fetch("/churchGeneral/includes/footer.html")
     .then(res => res.text())
     .then(data => {
       document.getElementById("footer").innerHTML = data;
